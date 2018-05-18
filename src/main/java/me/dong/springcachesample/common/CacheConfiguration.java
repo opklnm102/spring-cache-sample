@@ -23,7 +23,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -50,136 +49,24 @@ public class CacheConfiguration {
         @Value(CategoryService.CACHE_TTL)
         private Long cacheCategoryTimeToLive;
 
-        @Value("${resource.redis.host}")
-        private String redisHostName;
-
-        @Value("${resource.redis.port}")
-        private int redisPort;
-
-        /**
-         */
-        public class JsonRedisTemplate<V> extends RedisTemplate<String, V> {
-
-            public JsonRedisTemplate(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper, Class valueType) {
-                RedisSerializer<String> stringSerializer = new StringRedisSerializer();
-                setKeySerializer(stringSerializer);
-                setHashKeySerializer(stringSerializer);
-                setHashValueSerializer(stringSerializer);
-                Jackson2JsonRedisSerializer jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(valueType);
-                jsonRedisSerializer.setObjectMapper(objectMapper);
-                setValueSerializer(jsonRedisSerializer);
-                setConnectionFactory(connectionFactory);
-                afterPropertiesSet();
-            }
-
-        }
-
-
         @Bean
-        public CacheManagerCustomizer<RedisCacheManager> cacheManagerCustomizer() {
-            return new CacheManagerCustomizer<RedisCacheManager>() {
-                @Override
-                public void customize(RedisCacheManager cacheManager) {
-                    cacheManager.setDefaultExpiration(cacheRedisProperties.getDefaultExpireTime());
-                    cacheManager.setExpires(cacheRedisProperties.getExpireTime());
+        public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
+            Map<String, RedisCacheConfiguration> redisCacheConfigurations = new HashMap<>();
+            redisCacheConfigurations.put(BookService.CACHE_NAME, createRedisCacheConfiguration(cacheBookTimeToLive));
+            redisCacheConfigurations.put(CategoryService.CACHE_NAME, createRedisCacheConfiguration(cacheCategoryTimeToLive));
+            // TODO: 2018. 5. 18. rest call cache
+            // Use the default redisTemplate for caching REST calls
+//            cacheManager.withCache(CachedRestClient.CACHE_NAME, this.cacheNetworkTimeToLive);
 
-                }
-
-            };
+            return RedisCacheManager.builder(redisConnectionFactory)
+                    .withInitialCacheConfigurations(redisCacheConfigurations)
+                    .build();
         }
 
         private RedisCacheConfiguration createRedisCacheConfiguration(long ttl) {
             return RedisCacheConfiguration.defaultCacheConfig()
                     .entryTtl(Duration.ofSeconds(ttl));
         }
-
-
-        @Bean
-        public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory,
-                                              ObjectMapper objectMapper) {
-
-            Map<String, RedisCacheConfiguration> redisCacheConfigurations = new HashMap<>();
-            redisCacheConfigurations.put(BookService.CACHE_NAME, createRedisCacheConfiguration(cacheBookTimeToLive));
-            redisCacheConfigurations.put(CategoryService.CACHE_NAME,  createRedisCacheConfiguration(cacheCategoryTimeToLive));
-
-            RedisCacheManager cacheManager = RedisCacheManager.builder(redisConnectionFactory)
-                    .withInitialCacheConfigurations(redisCacheConfigurations)
-                    .build();
-
-
-
-
-
-            // Use the default redisTemplate for caching REST calls
-//            cacheManager.withCache(CachedRestClient.CACHE_NAME, this.cacheNetworkTimeToLive);
-
-
-            // Use
-            JsonRedisTemplate blogTemplate = new JsonRedisTemplate<>(redisConnectionFactory, objectMapper,
-                    BlogService.CACHE_TYPE);
-            cacheManager.withCache(BlogService.CACHE_NAME, blogTemplate, this.cacheBlogTimeToLive);
-
-            JsonRedisTemplate teamTemplate = new JsonRedisTemplate<>(redisConnectionFactory, objectMapper,
-                    TeamService.CACHE_TYPE);
-            cacheManager.withCache(TeamService.CACHE_NAME, teamTemplate, this.cacheTeamTimeToLive);
-
-            JsonRedisTemplate guidesTemplate = new JsonRedisTemplate<>(redisConnectionFactory, objectMapper,
-                    GettingStartedGuides.CACHE_TYPE);
-            cacheManager.withCache(GettingStartedGuides.CACHE_NAME, guidesTemplate, this.cacheGuideTimeToLive);
-
-            JsonRedisTemplate understandingTemplate = new JsonRedisTemplate<>(redisConnectionFactory, objectMapper,
-                    UnderstandingDocs.CACHE_TYPE);
-            cacheManager.withCache(UnderstandingDocs.CACHE_NAME, understandingTemplate, this.cacheUnderstandingTimeToLive);
-
-            JsonRedisTemplate tutorialTemplate = new JsonRedisTemplate<>(redisConnectionFactory, objectMapper,
-                    Tutorials.CACHE_TYPE);
-            cacheManager.withCache(Tutorials.CACHE_NAME, tutorialTemplate, this.cacheTutorialTimeToLive);
-
-            JsonRedisTemplate topicalTemplate = new JsonRedisTemplate<>(redisConnectionFactory, objectMapper,
-                    Topicals.CACHE_TYPE);
-            cacheManager.withCache(Topicals.CACHE_NAME, topicalTemplate, this.cacheTopicalTimeToLive);
-
-            return cacheManager;
-        }
-
-        @Bean
-        public RedisConnectionFactory redisConnectionFactory() {
-            return connectionFactory().redisConnectionFactory();
-        }
-
-        @Bean
-        public JedisConnectionFactory jedisConnectionFactory(RedisProperties redisProperties) {
-            JedisConnectionFactory factory = new JedisConnectionFactory();
-            factory.setHostName(redisProperties.getHost());
-            factory.setPort(redisProperties.getPort());
-            factory.setUsePool(true);
-            return factory;
-        }
-
-
-        @Bean
-        public StringRedisSerializer stringRedisSerializer() {
-            return new StringRedisSerializer();
-        }
-
-
-        @Bean
-        public RedisTemplate<String, Object> redisTemplate() {
-            final RedisTemplate<String, Object> template = new RedisTemplate<>();
-            template.setConnectionFactory(jedisConnectionFactory());
-            template.setKeySerializer(new StringRedisSerializer());
-            template.setHashKeySerializer(new StringRedisSerializer());
-            template.setHashValueSerializer(new GenericToStringSerializer<>(Object.class));
-            template.setValueSerializer(new GenericToStringSerializer<>(Object.class));
-            return template;
-        }
-
-//        @Bean
-//        public RedisCacheManager cacheManager() {
-//            RedisCacheManager cacheManager = new RedisCacheManager(redisTemplate());
-//            return cacheManager;
-//        }
-
     }
 
     @Profile(SampleProfiles.STANDALONE)

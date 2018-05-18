@@ -24,7 +24,10 @@ public class SimpleBookRepository implements BookRepository {
 
         log.info("수행시간 {}", end - start);
 
-        return new Book(isbn, "Some Book");
+        return Book.builder()
+                .isbn(isbn)
+                .title("Some Book")
+                .build();
     }
 
     @CacheEvict(value = "books", key = "#book.isbn")

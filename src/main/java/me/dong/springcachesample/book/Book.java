@@ -10,7 +10,6 @@ import lombok.ToString;
 /**
  * Created by ethan.kim on 2018. 5. 16..
  */
-@Builder
 @NoArgsConstructor
 @Getter
 @Setter
@@ -21,4 +20,10 @@ public class Book {
     private String isbn;
 
     private String title;
+
+    @Builder
+    public Book(String isbn, String title) {
+        this.isbn = isbn;
+        this.title = title;
+    }
 }

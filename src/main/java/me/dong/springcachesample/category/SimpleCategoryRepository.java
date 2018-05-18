@@ -22,6 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SimpleCategoryRepository implements CategoryRepository {
 
+    private static final String CATEGORY_KEY_FORMAT = "category:%d";
+
+    // dummy data
     private Map<Long, Category> categories;
 
     public SimpleCategoryRepository() {
@@ -31,24 +34,26 @@ public class SimpleCategoryRepository implements CategoryRepository {
                 .collect(Collectors.toMap(Category::getId, Function.identity()));
     }
 
-    @Cacheable(value = "category", key = "#id")
+    // custom key를 지정할 수 있다
+    @Cacheable(value = "category", key = "T(me.dong.springcachesample.category.SimpleCategoryRepository).createKey(#categoryId)")
     @Override
-    public Category findById(long id) {
+    public Category findById(long categoryId) {
         long start = System.currentTimeMillis();
         simulateSlowService();
         long end = System.currentTimeMillis();
 
         log.info("수행시간 {}", end - start);
 
-        return categories.getOrDefault(id, Category.EMPTY);
+        return categories.getOrDefault(categoryId, Category.EMPTY);
     }
 
-    @CacheEvict(value = "category")
+    @Cacheable  // class의 @CacheConfig 설정이 적용되어 cacheName을 지정할 필요가 없다
     @Override
     public List<Category> findAll() {
         return new ArrayList<>(categories.values());
     }
 
+    @CacheEvict(value = "category")
     @Override
     public void save(Category category) {
         log.info("{}", category);
@@ -61,5 +66,9 @@ public class SimpleCategoryRepository implements CategoryRepository {
         } catch (InterruptedException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    public static String createKey(Long categoryId) {
+        return String.format(CATEGORY_KEY_FORMAT, categoryId);
     }
 }
