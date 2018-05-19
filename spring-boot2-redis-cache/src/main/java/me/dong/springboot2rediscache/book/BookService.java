@@ -29,12 +29,15 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-    @Cacheable(value = CACHE_NAME, key = "#isbn")
+    /*
+    SimpleKeyGenerator는 cache name과 params를 가지고 key를 생성한다
+     */
+    @Cacheable(value = CACHE_NAME, key = "#isbn")  // SimpleKeyGenerator에 의해 생성된 key -> cache.book::2
     public Book readBook(String isbn) {
         return bookRepository.findByIsbn(isbn);
     }
 
-    @Cacheable(value = CACHE_NAME)
+    @Cacheable(value = CACHE_NAME)  // SimpleKeyGenerator에 의해 생성된 key -> cache.book::SimpleKey []
     public List<Book> readBooks() {
         return bookRepository.findAll();
     }
