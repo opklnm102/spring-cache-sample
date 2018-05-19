@@ -19,7 +19,7 @@ import java.util.Map;
  * Created by ethan.kim on 2018. 5. 19..
  */
 @Component
-public class CacheRestClient {
+public class CachedRestClient {
 
     public static final String CACHE_NAME = "cache.network";
 

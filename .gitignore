@@ -27,10 +27,13 @@
 
 ### gradle ###
 gradle/
-spring-boot2-redis-cache/gradle/
-spring-boot1-redis-cache/gradle/
 
+spring-boot1-redis-cache/gradle/
 spring-boot1-redis-cache/out/
+spring-boot1-redis-cache/build/
+
+spring-boot2-redis-cache/gradle/
+spring-boot2-redis-cache/build/
 spring-boot2-redis-cache/out/
 
 /gradle/wrapper/gradle-wrapper.jar
