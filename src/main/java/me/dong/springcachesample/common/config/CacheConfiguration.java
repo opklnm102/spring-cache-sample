@@ -1,8 +1,6 @@
-package me.dong.springcachesample.common;
+package me.dong.springcachesample.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
@@ -12,22 +10,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericToStringSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import me.dong.springcachesample.book.BookService;
 import me.dong.springcachesample.category.CategoryService;
+import me.dong.springcachesample.common.SampleProfiles;
 
 /**
  * Created by ethan.kim on 2018. 5. 17..
@@ -58,7 +51,8 @@ public class CacheConfiguration {
             // Use the default redisTemplate for caching REST calls
 //            cacheManager.withCache(CachedRestClient.CACHE_NAME, this.cacheNetworkTimeToLive);
 
-            return RedisCacheManager.builder(redisConnectionFactory)
+            return RedisCacheManager.builder(
+                    RedisCacheWriter.lockingRedisCacheWriter(redisConnectionFactory))
                     .withInitialCacheConfigurations(redisCacheConfigurations)
                     .build();
         }

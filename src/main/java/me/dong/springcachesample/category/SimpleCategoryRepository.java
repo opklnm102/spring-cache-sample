@@ -1,8 +1,5 @@
 package me.dong.springcachesample.category;
 
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -18,11 +15,8 @@ import lombok.extern.slf4j.Slf4j;
  * Created by ethan.kim on 2018. 5. 17..
  */
 @Component
-@CacheConfig(cacheNames = "category")
 @Slf4j
 public class SimpleCategoryRepository implements CategoryRepository {
-
-    private static final String CATEGORY_KEY_FORMAT = "category:%d";
 
     // dummy data
     private Map<Long, Category> categories;
@@ -34,8 +28,6 @@ public class SimpleCategoryRepository implements CategoryRepository {
                 .collect(Collectors.toMap(Category::getId, Function.identity()));
     }
 
-    // custom key를 지정할 수 있다
-    @Cacheable(value = "category", key = "T(me.dong.springcachesample.category.SimpleCategoryRepository).createKey(#categoryId)")
     @Override
     public Category findById(long categoryId) {
         long start = System.currentTimeMillis();
@@ -47,13 +39,11 @@ public class SimpleCategoryRepository implements CategoryRepository {
         return categories.getOrDefault(categoryId, Category.EMPTY);
     }
 
-    @Cacheable  // class의 @CacheConfig 설정이 적용되어 cacheName을 지정할 필요가 없다
     @Override
     public List<Category> findAll() {
         return new ArrayList<>(categories.values());
     }
 
-    @CacheEvict(value = "category")
     @Override
     public void save(Category category) {
         log.info("{}", category);
@@ -66,9 +56,5 @@ public class SimpleCategoryRepository implements CategoryRepository {
         } catch (InterruptedException e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    public static String createKey(Long categoryId) {
-        return String.format(CATEGORY_KEY_FORMAT, categoryId);
     }
 }

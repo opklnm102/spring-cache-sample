@@ -1,5 +1,7 @@
 package me.dong.springcachesample.category;
 
+import java.io.Serializable;
+
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,7 +18,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @EqualsAndHashCode(of = "id")
-public class Category {
+public class Category implements Serializable {
 
     public static final Category EMPTY = new Category();
 

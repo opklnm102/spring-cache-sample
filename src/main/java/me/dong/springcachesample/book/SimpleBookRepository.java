@@ -7,15 +7,17 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static me.dong.springcachesample.book.BookService.CACHE_NAME;
+
 /**
  * Created by ethan.kim on 2018. 5. 17..
  */
 @Component
-@CacheConfig(cacheNames = "books")
+@CacheConfig(cacheNames = CACHE_NAME)
 @Slf4j
 public class SimpleBookRepository implements BookRepository {
 
-    @Cacheable(value = "books", key = "#isbn")
+    @Cacheable(value = CACHE_NAME, key = "#isbn")
     @Override
     public Book findByIsbn(String isbn) {
         long start = System.currentTimeMillis();
@@ -30,7 +32,7 @@ public class SimpleBookRepository implements BookRepository {
                 .build();
     }
 
-    @CacheEvict(value = "books", key = "#book.isbn")
+    @CacheEvict(value = CACHE_NAME, key = "#book.isbn")
     @Override
     public void save(Book book) {
         log.info("{}", book);
