@@ -21,11 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 import me.dong.springboot2rediscache.book.BookService;
 import me.dong.springboot2rediscache.category.CategoryService;
 import me.dong.springboot2rediscache.common.SampleProfiles;
+import me.dong.springboot2rediscache.support.cache.CacheRestClient;
 
 /**
  * Created by ethan.kim on 2018. 5. 17..
  */
-@EnableCaching // (proxyTargetClass = true)
+@EnableCaching(proxyTargetClass = true)
 @Configuration
 @Slf4j
 public class CacheConfiguration {
@@ -33,8 +34,8 @@ public class CacheConfiguration {
     @Profile(SampleProfiles.CLOUD)
     static class CloudCacheConfiguration {
 
-//        @Value(BookService.CACHE_TTL)
-//        private Long cacheNetworkTimeToLive;
+        @Value(CacheRestClient.CACHE_TTL)
+        private Long cacheNetworkTimeToLive;
 
         @Value(BookService.CACHE_TTL)
         private Long cacheBookTimeToLive;
@@ -47,9 +48,9 @@ public class CacheConfiguration {
             Map<String, RedisCacheConfiguration> redisCacheConfigurations = new HashMap<>();
             redisCacheConfigurations.put(BookService.CACHE_NAME, createRedisCacheConfiguration(cacheBookTimeToLive));
             redisCacheConfigurations.put(CategoryService.CACHE_NAME, createRedisCacheConfiguration(cacheCategoryTimeToLive));
-            // TODO: 2018. 5. 18. rest call cache
+
             // Use the default redisTemplate for caching REST calls
-//            cacheManager.withCache(CachedRestClient.CACHE_NAME, this.cacheNetworkTimeToLive);
+            redisCacheConfigurations.put(CacheRestClient.CACHE_NAME, createRedisCacheConfiguration(cacheNetworkTimeToLive));
 
             return RedisCacheManager.builder(
                     RedisCacheWriter.lockingRedisCacheWriter(redisConnectionFactory))
