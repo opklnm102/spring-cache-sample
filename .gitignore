@@ -26,7 +26,9 @@
 /.nb-gradle/
 
 ### gradle ###
-gradle/
+/gradle/
+/gradle/wrapper/gradle-wrapper.jar
+/gradle/wrapper/gradle-wrapper.properties
 
 spring-boot1-redis-cache/gradle/
 spring-boot1-redis-cache/out/
@@ -36,5 +38,6 @@ spring-boot2-redis-cache/gradle/
 spring-boot2-redis-cache/build/
 spring-boot2-redis-cache/out/
 
-/gradle/wrapper/gradle-wrapper.jar
-/gradle/wrapper/gradle-wrapper.properties
+boot-generate-bean-custom/gradle/
+boot-generate-bean-custom/out/
+boot-generate-bean-custom/build/
