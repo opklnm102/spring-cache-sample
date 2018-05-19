@@ -22,8 +22,6 @@ public class CategoryService {
 
     public static final String CACHE_NAME = "cache.category";
 
-    public static final Class CACHE_TYPE = Category.class;
-
     public static final String CACHE_TTL = "${cache.category.timetolive:60}";
 
     private final CategoryRepository categoryRepository;

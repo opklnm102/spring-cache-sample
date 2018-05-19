@@ -1,14 +1,16 @@
-package me.dong.springboot2rediscache.book;
+package me.dong.springboot1rediscache.book;
 
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import static me.dong.springboot2rediscache.book.BookService.CACHE_NAME;
+import static me.dong.springboot1rediscache.book.BookService.CACHE_NAME;
 
 /**
  * Created by ethan.kim on 2018. 5. 17..
@@ -18,6 +20,8 @@ import static me.dong.springboot2rediscache.book.BookService.CACHE_NAME;
 public class BookService {
 
     public static final String CACHE_NAME = "cache.book";
+
+    public static final Class<Book> CACHE_TYPE = Book.class;
 
     public static final String CACHE_TTL = "${cache.book.timetolive:60}";
 
@@ -35,8 +39,12 @@ public class BookService {
         return bookRepository.findByIsbn(isbn);
     }
 
-    @Cacheable(value = CACHE_NAME)  // SimpleKeyGenerator에 의해 생성된 key -> cache.book::SimpleKey []
-    public List<Book> readBooks() {
+    // parameter가 없을 떄 SimpleKeyGenerator에 의해 생성된 key -> SimpleKey []
+    // string key serializer라서 serialize 하지 못하고 exception 발생
+    // key genator를 바꾸든 방법 필요
+    @Cacheable(value = CACHE_NAME)
+    public List<Book> readBooks(String timestamp) {
+        Long.parseLong(timestamp);
         return bookRepository.findAll();
     }
 
