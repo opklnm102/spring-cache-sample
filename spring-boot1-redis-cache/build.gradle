@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.2.RELEASE'
+        springBootVersion = '1.5.13.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -13,7 +13,6 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
 
 group = 'me.dong'
 version = '0.0.1-SNAPSHOT'
@@ -23,21 +22,11 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-cache')
-//    compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-data-redis')
-//    compile('org.springframework.boot:spring-boot-starter-jdbc')
     compile('org.springframework.boot:spring-boot-starter-web')
-//    runtime('com.h2database:h2')
-    compile('org.projectlombok:lombok')
-
+    compileOnly('org.projectlombok:lombok')
     testCompile('org.springframework.boot:spring-boot-starter-test')
-
-    // spring-data-redis에 dependency가 추가되어 있는데 이상하게 jar download를 못함...
-    compile 'org.apache.commons:commons-pool2:2.2'
-}
-
-bootRun {
-    systemProperty 'spring.profiles.active', 'standalone'
 }

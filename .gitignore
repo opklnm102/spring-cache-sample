@@ -16,7 +16,6 @@
 *.iws
 *.iml
 *.ipr
-/out/
 
 ### NetBeans ###
 /nbproject/private/
@@ -29,3 +28,10 @@
 ### gradle ###
 gradle/
 spring-boot2-redis-cache/gradle/
+spring-boot1-redis-cache/gradle/
+
+spring-boot1-redis-cache/out/
+spring-boot2-redis-cache/out/
+
+/gradle/wrapper/gradle-wrapper.jar
+/gradle/wrapper/gradle-wrapper.properties

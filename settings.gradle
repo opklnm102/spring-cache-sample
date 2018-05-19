@@ -1,1 +1,3 @@
 rootProject.name = 'spring-cache-sample'
+
+include 'spring-boot2-cache', 'spring-boot1-cache'
