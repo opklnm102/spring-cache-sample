@@ -25,3 +25,7 @@
 /dist/
 /nbdist/
 /.nb-gradle/
+
+### gradle ###
+gradle/
+spring-boot2-redis-cache/gradle/
