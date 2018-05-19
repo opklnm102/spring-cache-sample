@@ -1,30 +1,23 @@
 package me.dong.springboot2rediscache.book;
 
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static me.dong.springboot2rediscache.book.BookService.CACHE_NAME;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by ethan.kim on 2018. 5. 17..
  */
 @Component
-@CacheConfig(cacheNames = CACHE_NAME)
 @Slf4j
 public class SimpleBookRepository implements BookRepository {
 
-    @Cacheable(value = CACHE_NAME, key = "#isbn")
     @Override
     public Book findByIsbn(String isbn) {
-        long start = System.currentTimeMillis();
         simulateSlowService();
-        long end = System.currentTimeMillis();
-
-        log.info("수행시간 {}", end - start);
 
         return Book.builder()
                 .isbn(isbn)
@@ -32,7 +25,19 @@ public class SimpleBookRepository implements BookRepository {
                 .build();
     }
 
-    @CacheEvict(value = CACHE_NAME, key = "#book.isbn")
+    @Override
+    public List<Book> findAll() {
+        simulateSlowService();
+        
+        return Stream.iterate(0, n -> n + 1)
+                .limit(10)
+                .map(n -> Book.builder()
+                        .isbn("isbn" + n)
+                        .title("title" + n)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
     @Override
     public void save(Book book) {
         log.info("{}", book);

@@ -1,5 +1,7 @@
 package me.dong.springboot2rediscache.book;
 
+import java.io.Serializable;
+
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,7 +17,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @EqualsAndHashCode(of = "isbn")
-public class Book {
+public class Book implements Serializable {
 
     private String isbn;
 

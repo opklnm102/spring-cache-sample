@@ -30,17 +30,13 @@ public class SimpleCategoryRepository implements CategoryRepository {
 
     @Override
     public Category findById(long categoryId) {
-        long start = System.currentTimeMillis();
         simulateSlowService();
-        long end = System.currentTimeMillis();
-
-        log.info("수행시간 {}", end - start);
-
         return categories.getOrDefault(categoryId, Category.EMPTY);
     }
 
     @Override
     public List<Category> findAll() {
+        simulateSlowService();
         return new ArrayList<>(categories.values());
     }
 
@@ -49,6 +45,9 @@ public class SimpleCategoryRepository implements CategoryRepository {
         log.info("{}", category);
     }
 
+    /**
+     * slow query 상황을 재현하기 위한 메소드
+     */
     private void simulateSlowService() {
         try {
             long time = 3000L;
